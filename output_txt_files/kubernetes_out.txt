@@ -1,1 +1,46 @@
-<paste log output from Kubernetes-mediated prediction, here>
+root@ip-172-31-11-216:/home/ubuntu# kubectl expose deployment ml-prediction --external-ip="172.31.11.216" --port=8080 --target-port=80
+service/ml-prediction exposed
+root@ip-172-31-11-216:/home/ubuntu# kubectl get svc
+NAME            TYPE        CLUSTER-IP      EXTERNAL-IP     PORT(S)    AGE
+kubernetes      ClusterIP   10.96.0.1       <none>          443/TCP    74m
+ml-prediction   ClusterIP   10.107.53.186   172.31.11.216   8080/TCP   4s
+
+root@ip-172-31-11-216:/home/ubuntu# sh make_prediction.sh 
+Port: 8080
+{
+  "prediction": [
+    20.35373177134412
+  ]
+}
+
+root@ip-172-31-11-216:/home/ubuntu# kubectl get pods
+NAME                             READY   STATUS    RESTARTS   AGE
+ml-prediction-587d8c56b5-77rzx   1/1     Running   0          29m
+
+root@ip-172-31-11-216:/home/ubuntu# kubectl logs ml-prediction-587d8c56b5-77rzx
+ * Serving Flask app "app" (lazy loading)
+ * Environment: production
+   WARNING: This is a development server. Do not use it in a production deployment.
+   Use a production WSGI server instead.
+ * Debug mode: on
+/usr/local/lib/python3.7/site-packages/sklearn/base.py:251: UserWarning: Trying to unpickle estimator DecisionTreeRegressor from version 0.20.3 when using version 0.20.2. This might lead to breaking code or invalid results. Use at your own risk.
+  UserWarning)
+/usr/local/lib/python3.7/site-packages/sklearn/base.py:251: UserWarning: Trying to unpickle estimator GradientBoostingRegressor from version 0.20.3 when using version 0.20.2. This might lead to breaking code or invalid results. Use at your own risk.
+  UserWarning)
+ * Running on http://0.0.0.0:80/ (Press CTRL+C to quit)
+ * Restarting with stat
+/usr/local/lib/python3.7/site-packages/sklearn/base.py:251: UserWarning: Trying to unpickle estimator DecisionTreeRegressor from version 0.20.3 when using version 0.20.2. This might lead to breaking code or invalid results. Use at your own risk.
+  UserWarning)
+/usr/local/lib/python3.7/site-packages/sklearn/base.py:251: UserWarning: Trying to unpickle estimator GradientBoostingRegressor from version 0.20.3 when using version 0.20.2. This might lead to breaking code or invalid results. Use at your own risk.
+  UserWarning)
+ * Debugger is active!
+ * Debugger PIN: 231-779-307
+[2019-10-14 22:50:00,059] INFO in app: JSON payload: 
+{'CHAS': {'0': 0}, 'RM': {'0': 6.575}, 'TAX': {'0': 296.0}, 'PTRATIO': {'0': 15.3}, 'B': {'0': 396.9}, 'LSTAT': {'0': 4.98}}
+[2019-10-14 22:50:00,076] INFO in app: Inference payload DataFrame: 
+   CHAS     RM    TAX  PTRATIO      B  LSTAT
+0     0  6.575  296.0     15.3  396.9   4.98
+[2019-10-14 22:50:00,086] INFO in app: Scaling Payload: 
+   CHAS     RM    TAX  PTRATIO      B  LSTAT
+0     0  6.575  296.0     15.3  396.9   4.98
+172.17.0.1 - - [14/Oct/2019 22:50:00] "POST /predict HTTP/1.1" 200 -
