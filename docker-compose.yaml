@@ -1,0 +1,13 @@
+version: '3.1'
+services:
+  price-prediction:
+    build: .
+    container_name: price-prediction 
+    environment: 
+      - FLASK_ENV=development
+    ports:
+      - "8000:80"
+    logging:
+      driver: "json-file"
+    volumes:
+      - .:/app
